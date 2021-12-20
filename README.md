@@ -1,6 +1,6 @@
 # Express.js Server for [Home Solution](https://home-solution.herokuapp.com/)
 
-This server is deployed in Heroku. Click here to open Server end point []().
+This server is deployed in Heroku. Click here to open Server end point [https://mighty-woodland-85261.herokuapp.com/](https://mighty-woodland-85261.herokuapp.com/).
 
 ## What included in this Repo
 
