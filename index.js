@@ -25,6 +25,7 @@ async function run() {
       database.collection("upcommingProjects");
     const topProjectCollection = database.collection("topProjects");
     const testimonialCollection = database.collection("testimonials");
+    const saleFlatCollection = database.collection("saleFlats");
     const userCollection = database.collection("users");
 
     // GET API - Get Top projects
@@ -47,6 +48,20 @@ async function run() {
       const testimonials = await cursor.toArray();
       res.json(testimonials);
     });
+
+    // GET API - Sale Flats
+    app.get("/sale-flats", async (req, res) => {
+      const cursor = saleFlatCollection.find({});
+      const saleFlats = await cursor.toArray();
+      res.json(saleFlats);
+    });
+
+    // GET API - Top Sale Flats
+    app.get('/top-sale-flats', async (req, res) => {
+      const cursor = saleFlatCollection.find({});
+      const topSaleFlats = await cursor.limit(4).toArray();
+      res.json(topSaleFlats);
+  });
 
     // POST - Add user data to Database
     app.post("/users", async (req, res) => {
