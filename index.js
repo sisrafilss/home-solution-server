@@ -1,5 +1,6 @@
 const express = require("express");
 const { MongoClient } = require("mongodb");
+const ObjectId = require('mongodb').ObjectId;
 const cors = require("cors");
 require("dotenv").config();
 
@@ -27,6 +28,7 @@ async function run() {
     const testimonialCollection = database.collection("testimonials");
     const saleFlatCollection = database.collection("saleFlats");
     const userCollection = database.collection("users");
+    const orderCollection = database.collection("orders");
 
     // GET API - Get Top projects
     app.get("/top-projects", async (req, res) => {
@@ -63,6 +65,14 @@ async function run() {
       res.json(topSaleFlats);
   });
 
+  // GET API - Single Flat Details 
+  app.get('/sale-flats/:id', async (req, res) => {
+    const id = req.params.id;
+    const query = { _id: ObjectId(id) }
+    const flatDetail = await saleFlatCollection.findOne(query);
+    res.json(flatDetail);
+});
+
     // POST - Add user data to Database
     app.post("/users", async (req, res) => {
       const newUser = req.body;
@@ -95,6 +105,17 @@ async function run() {
         res.json({ admin: isAdmin});
       }
     });
+
+
+    // POST - place order
+    app.post('/place-order', async (req, res) => {
+      const order = req.body;
+      console.log(order);
+      order['status'] = 'Pending';
+      const result = await orderCollection.insertOne(order);
+      res.json(result);
+      console.log(result);
+  });
 
 
   } finally {
