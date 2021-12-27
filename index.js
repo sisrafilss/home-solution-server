@@ -21,9 +21,11 @@ async function run() {
     await client.connect();
 
     const database = client.db("home_solution");
+    const upcoomingProjectsCollection =
+      database.collection("upcommingProjects");
     const topProjectCollection = database.collection("topProjects");
-    const upcoomingProjectsCollection = database.collection("upcommingProjects");
     const testimonialCollection = database.collection("testimonials");
+    const userCollection = database.collection('users');
 
     // GET API - Get Top projects
     app.get("/top-projects", async (req, res) => {
@@ -34,19 +36,36 @@ async function run() {
 
     // GET API - Get Upcomming projects
     app.get("/upcomming-projects", async (req, res) => {
-        const cursor = upcoomingProjectsCollection.find({});
-        const upcommingProjectsd = await cursor.limit(4).toArray();
-        res.json(upcommingProjectsd);
-      });
+      const cursor = upcoomingProjectsCollection.find({});
+      const upcommingProjectsd = await cursor.limit(4).toArray();
+      res.json(upcommingProjectsd);
+    });
 
-      // GET API - Get Testimonials
+    // GET API - Get Testimonials
     app.get("/testimonials", async (req, res) => {
-        const cursor = testimonialCollection.find({});
-        const testimonials = await cursor.toArray();
-        res.json(testimonials);
-      });
+      const cursor = testimonialCollection.find({});
+      const testimonials = await cursor.toArray();
+      res.json(testimonials);
+    });
 
+    // POST - Add user data to Database
+    app.post("/users", async (req, res) => {
+      const newUser = req.body;
+      console.log(newUser);
+      const result = await userCollection.insertOne(newUser);
+      res.json(result);
+      console.log(result);
+    });
 
+    // PUT - Update user data to database for third party login system
+    app.put("/users", async (req, res) => {
+      const userData = req.body;
+      const filter = { email: userData.email };
+      const options = { upsert: true };
+      const updateDoc = { $set: userData };
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+      res.json(result);
+    });
   } finally {
     // await client.close();
   }
