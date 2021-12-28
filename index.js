@@ -210,6 +210,21 @@ async function run() {
       const result = await rentedFlatCollection.insertOne(product);
       res.json(result);
     });
+
+    // PUT - Set an user role as admin
+    app.put("/make-admin/:id", async (req, res) => {
+      const filter = req.params.id;
+      const updateDoc = {
+        $set: {
+          role: "admin",
+        },
+      };
+      const result = await userCollection.updateOne(
+        { email: filter },
+        updateDoc
+      );
+      res.json(result);
+    });
   } finally {
     // await client.close();
   }
