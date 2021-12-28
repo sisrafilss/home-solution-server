@@ -196,6 +196,20 @@ async function run() {
       const result = await orderCollection.deleteOne(query);
       res.json({ _id: id, deletedCount: result.deletedCount });
     });
+
+    // POST - Add a product - Admin
+    app.post("/add-sale-flat", async (req, res) => {
+      const product = req.body;
+      const result = await saleFlatCollection.insertOne(product);
+      res.json(result);
+    });
+
+    // POST - Add a product - Admin
+    app.post("/add-rent-flat", async (req, res) => {
+      const product = req.body;
+      const result = await rentedFlatCollection.insertOne(product);
+      res.json(result);
+    });
   } finally {
     // await client.close();
   }
