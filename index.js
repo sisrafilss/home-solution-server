@@ -225,6 +225,37 @@ async function run() {
       );
       res.json(result);
     });
+
+     // GET All Sale Flats
+     app.get("/all-sale-flats", async (req, res) => {
+      const cursor = saleFlatCollection.find({});
+      const saleFlats = await cursor.toArray();
+      res.json(saleFlats);
+    });
+
+     // GET All Rent Flats
+     app.get("/all-rent-flats", async (req, res) => {
+      const cursor = rentedFlatCollection.find({});
+      const rentFlats = await cursor.toArray();
+      res.json(rentFlats);
+    });
+
+    // Delete - Delete a sale Flat by admin
+    app.delete("/delete-sale-flat/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await saleFlatCollection.deleteOne(query);
+      res.json({ _id: id, deletedCount: result.deletedCount });
+    });
+
+    // Delete - Delete a Rent Flat by admin
+    app.delete("/delete-rent-flat/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await rentedFlatCollection.deleteOne(query);
+      res.json({ _id: id, deletedCount: result.deletedCount });
+    });
+
   } finally {
     // await client.close();
   }
