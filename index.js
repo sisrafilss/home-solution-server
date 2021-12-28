@@ -1,6 +1,6 @@
 const express = require("express");
 const { MongoClient } = require("mongodb");
-const ObjectId = require('mongodb').ObjectId;
+const ObjectId = require("mongodb").ObjectId;
 const cors = require("cors");
 require("dotenv").config();
 
@@ -27,8 +27,10 @@ async function run() {
     const topProjectCollection = database.collection("topProjects");
     const testimonialCollection = database.collection("testimonials");
     const saleFlatCollection = database.collection("saleFlats");
+    const rentedFlatCollection = database.collection("rentedFlats");
     const userCollection = database.collection("users");
     const orderCollection = database.collection("orders");
+    const rentOrderCollection = database.collection("rentOrders");
 
     // GET API - Get Top projects
     app.get("/top-projects", async (req, res) => {
@@ -59,19 +61,40 @@ async function run() {
     });
 
     // GET API - Top Sale Flats
-    app.get('/top-sale-flats', async (req, res) => {
+    app.get("/top-sale-flats", async (req, res) => {
       const cursor = saleFlatCollection.find({});
       const topSaleFlats = await cursor.limit(4).toArray();
       res.json(topSaleFlats);
-  });
+    });
 
-  // GET API - Single Flat Details 
-  app.get('/sale-flats/:id', async (req, res) => {
-    const id = req.params.id;
-    const query = { _id: ObjectId(id) }
-    const flatDetail = await saleFlatCollection.findOne(query);
-    res.json(flatDetail);
-});
+    // GET API - Single Flat Details
+    app.get("/sale-flats/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const flatDetail = await saleFlatCollection.findOne(query);
+      res.json(flatDetail);
+    });
+
+    // GET API - Top Rented Flats
+    app.get("/top-rented-flats", async (req, res) => {
+      const cursor = rentedFlatCollection.find({});
+      const topRentedFlats = await cursor.limit(4).toArray();
+      res.json(topRentedFlats);
+    });
+
+    // GET API - Rented Flats
+    app.get("/rented-flats", async (req, res) => {
+      const cursor = rentedFlatCollection.find({});
+      const rentedFlats = await cursor.toArray();
+      res.json(rentedFlats);
+    });
+    app.get("/rented-flats/:id", async (req, res) => {
+    // GET API - Single Rented Flat Detail
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const flatDetail = await rentedFlatCollection.findOne(query);
+      res.json(flatDetail);
+    });
 
     // POST - Add user data to Database
     app.post("/users", async (req, res) => {
@@ -102,22 +125,17 @@ async function run() {
         isAdmin = true;
         res.json({ admin: isAdmin });
       } else {
-        res.json({ admin: isAdmin});
+        res.json({ admin: isAdmin });
       }
     });
 
-
-    // POST - place order
-    app.post('/place-order', async (req, res) => {
+    // POST - Place order
+    app.post("/place-order", async (req, res) => {
       const order = req.body;
-      console.log(order);
-      order['status'] = 'Pending';
+      order["status"] = "Pending";
       const result = await orderCollection.insertOne(order);
       res.json(result);
-      console.log(result);
-  });
-
-
+    });
   } finally {
     // await client.close();
   }
