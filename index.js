@@ -164,6 +164,38 @@ async function run() {
       res.send(result);
     });
 
+    // GET - All Orders (for Admin)
+    app.get("/orders", async (req, res) => {
+      const email = req.query.email;
+      const cursor = orderCollection.find({});
+      const result = await cursor.toArray();
+      res.json(result);
+    });
+
+    // PUT - Update an order status
+    app.put("/orders/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const found = await orderCollection.findOne(query);
+      found.status = "Shipped";
+      const filter = query;
+      const options = { upsert: false };
+      const updateDoc = { $set: found };
+      const result = await orderCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.json({ _id: id, modifiedCount: result.modifiedCount });
+    });
+
+    // Delete - Delete an Order by admin
+    app.delete("/orders/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await orderCollection.deleteOne(query);
+      res.json({ _id: id, deletedCount: result.deletedCount });
+    });
   } finally {
     // await client.close();
   }
