@@ -150,14 +150,20 @@ async function run() {
     });
 
     // Delete - an order by user
-    app.delete('/my-orders/:id', async (req, res) => {
+    app.delete("/my-orders/:id", async (req, res) => {
       const id = req.params.id;
-      const query = { _id: ObjectId(id) }
+      const query = { _id: ObjectId(id) };
       const result = await orderCollection.deleteOne(query);
-      res.json({deletedCount: result.deletedCount, deletedId: id});
-  })
+      res.json({ deletedCount: result.deletedCount, deletedId: id });
+    });
 
-    
+    // POST - User Review
+    app.post("/reviews", async (req, res) => {
+      const review = req.body;
+      const result = await testimonialCollection.insertOne(review);
+      res.send(result);
+    });
+
   } finally {
     // await client.close();
   }
