@@ -30,7 +30,6 @@ async function run() {
     const rentedFlatCollection = database.collection("rentedFlats");
     const userCollection = database.collection("users");
     const orderCollection = database.collection("orders");
-    const rentOrderCollection = database.collection("rentOrders");
 
     // GET API - Get Top projects
     app.get("/top-projects", async (req, res) => {
@@ -89,7 +88,7 @@ async function run() {
       res.json(rentedFlats);
     });
     app.get("/rented-flats/:id", async (req, res) => {
-    // GET API - Single Rented Flat Detail
+      // GET API - Single Rented Flat Detail
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const flatDetail = await rentedFlatCollection.findOne(query);
@@ -136,6 +135,29 @@ async function run() {
       const result = await orderCollection.insertOne(order);
       res.json(result);
     });
+
+    // GET - Orders for specific user
+    app.get("/my-orders", async (req, res) => {
+      const email = req.query.email;
+      const query = { email: email };
+      const cursor = orderCollection.find(query);
+      if ((await cursor.count()) > 0) {
+        const orders = await cursor.toArray();
+        res.json(orders);
+      } else {
+        res.json({ message: "Product Not Found!" });
+      }
+    });
+
+    // Delete - an order by user
+    app.delete('/my-orders/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) }
+      const result = await orderCollection.deleteOne(query);
+      res.json({deletedCount: result.deletedCount, deletedId: id});
+  })
+
+    
   } finally {
     // await client.close();
   }
